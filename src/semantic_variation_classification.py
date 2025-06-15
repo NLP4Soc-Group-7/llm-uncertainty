@@ -1,6 +1,7 @@
 from pipeline_components.data_loader import create_dataloader
 from pipeline_components.model_inference import ModelInferenceInterface, check_model_build_requirements, LocalModelInference, OpenAIModelInference
 from pipeline_components.prompts import subjectivity_classification_prompt
+from pipeline_components.number_parser import extract_number_from_text
 import os
 import json
 import time
@@ -157,6 +158,10 @@ def run_semantic_variation_classification(
         print(f"Failed to load data: {str(e)}")
         return
 
+    # Take only first 50 data points
+    data = data[:50]
+    print(f"Using first 50 samples for processing")
+
     # Step 3: Process each model
     for model_name, model_init_param in available_models.items():
         print(f"\n{'='*60}")
@@ -196,12 +201,32 @@ def run_semantic_variation_classification(
                     generated_text, token_probs = wrapper.generate_with_token_probs(
                         prompt, max_new_tokens=20
                     )
+                    number = extract_number_from_text(generated_text)
+                    if number == -1:
+                        number = 100 # mark fully subjective if there is no definitive answer 
                     
                     # Convert token probabilities to native Python types
                     token_probs_native = [(str(token), float(prob)) for token, prob in token_probs]
                     
+                    # Try to extract number, retry if not found
+                    # number = -1
+                    # max_retries = 3
+                    # retry_count = 0
+                    # while number == -1 and retry_count < max_retries:
+                    #     number = extract_number_from_text(generated_text)
+                    #     if number == -1:
+                    #         print(f"Warning: No number found in generated text, retrying ({retry_count + 1}/{max_retries})")
+                    #         generated_text, token_probs = wrapper.generate_with_token_probs(
+                    #             prompt, max_new_tokens=2
+                    #         )
+                    #         token_probs_native = [(str(token), float(prob)) for token, prob in token_probs]
+                    #         retry_count += 1
+                    
+                    sample_results['sample_idx'] = sample['sample_idx']
+                    sample_results['original_sentence'] = sample['original_sentence']
+                    sample_results['true_label'] = sample['true_label']
                     sample_results['original_classification'] = {
-                        'generated_text': generated_text,
+                        'generated_text': number,
                         'token_probs': token_probs_native
                     }
                 except Exception as e:
@@ -210,24 +235,45 @@ def run_semantic_variation_classification(
                 sample_results['variations'] = []
                 
                 # Process variations
-                for variation in sample_results:
+                for variation in sample['variations']:
                     try:
                         prompt = subjectivity_classification_prompt.format(sentence=variation['sentence'])
                         generated_text, token_probs = wrapper.generate_with_token_probs(
                             prompt, max_new_tokens=20
                         )
-                        
+                        number = extract_number_from_text(generated_text)
+                        if number == -1:
+                            number = 100 # mark fully subjective if there is no definitive answer 
+
                         # Convert token probabilities to native Python types
                         token_probs_native = [(str(token), float(prob)) for token, prob in token_probs]
+                        
+                        # Try to extract number, retry if not found
+                        # number = -1
+                        # max_retries = 3
+                        # retry_count = 0
+                        # while number == -1 and retry_count < max_retries:
+                        #     number = extract_number_from_text(generated_text)
+                        #     if number == -1:
+                        #         print(f"Warning: No number found in generated text, retrying ({retry_count + 1}/{max_retries})")
+                        #         generated_text, token_probs = wrapper.generate_with_token_probs(
+                        #             prompt, max_new_tokens=20
+                        #         )
+                        #         token_probs_native = [(str(token), float(prob)) for token, prob in token_probs]
+                        #         retry_count += 1
+                        
                         
                         variation_result = {
                             'variation_idx': variation['variation_idx'],
                             'sentence': variation['sentence'],
-                            'generated_text': generated_text,
+                            'generated_text': number,
                             'token_probs': token_probs_native
                         }
+
+                        print(f"s: {sample['sample_idx']}, v: {variation_result['variation_idx']}, l: {variation_result['generated_text']}")
                         
-                        sample_results['variations'].append(variation_result)
+                        if number != -1:
+                            sample_results['variations'].append(variation_result)
                         
                     except Exception as e:
                         print(f"Error processing variation {variation['variation_idx']}: {str(e)}")
@@ -270,8 +316,8 @@ if __name__ == "__main__":
     models = {
         # "distilgpt2": "src/models/distilgpt2",
         # "openai": "gpt-4o-mini",
-        "mistralai": "RedHatAI/Mistral-7B-Instruct-v0.3-GPTQ-4bit",
-        "meta-llama": "hugging-quants/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
+        "mistralai": "models/Mistral-7B-Instruct-v0.3-GPTQ-4bit",
+        # "meta-llama": "models/Meta-Llama-3.1-8B-Instruct-GPTQ-INT4"
         # Add more models as needed
     }
 

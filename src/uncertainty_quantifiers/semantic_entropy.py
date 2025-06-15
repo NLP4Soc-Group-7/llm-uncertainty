@@ -160,8 +160,8 @@ class SemanticEntropy:
         # Cluster semantically equivalent variations
         clusters = self._cluster_variations(context, variations)
 
-        # Get classification confidences for each variation
-        var_probs = [float(v["token_probs"][0][1]) for v in variations]
+        # Get classification confidences for each variation by accumulating token probabilities
+        var_probs = [float(np.prod([p[1] for p in v["token_probs"]])) for v in variations]
 
         # Sum classification confidences within each semantic cluster
         cluster_weights = []

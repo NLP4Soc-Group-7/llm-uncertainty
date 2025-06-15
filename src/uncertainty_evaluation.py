@@ -65,19 +65,29 @@ def run_uncertainty_evaluation(
 
 
 if __name__ == "__main__":
+    # plot_path = os.path.join("results/openai", "semantic_entropy", f"evaluation_plots_cluster_distances.png")
+    # evaluations_path = os.path.join("results/openai", "semantic_entropy", f"evaluations_cluster_distances.json")
+                
+    # evaluator = UncertaintyEvaluator(predictions, uncertainties, labels)
+    # evaluator.plot_evaluation_results(
+    #     save_path=plot_path,
+    #     evaluations_path=evaluations_path
+    # )
+
+
     parser = argparse.ArgumentParser(description="Run uncertainty quantification for subjectivity classification.")
     parser.add_argument(
         "--quantifier_type",
         type=str,
         choices=[QuantifierType.VERBALISED, QuantifierType.PREDICTIVE_ENTROPY, QuantifierType.SEMANTIC_ENTROPY],
-        default=QuantifierType.VERBALISED,
+        default=QuantifierType.SEMANTIC_ENTROPY,
         help="Type of uncertainty quantification to run."
     )
     parser.add_argument(
         "--model_names",
         type=str,
         nargs='+',
-        default=["openai"],
+        default=["mistralai"],
         help="List of model names to run uncertainty quantification for."
     )
     args = parser.parse_args()

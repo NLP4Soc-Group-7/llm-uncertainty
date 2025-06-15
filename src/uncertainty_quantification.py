@@ -24,7 +24,7 @@ def run_uncertainty_quantification(
             hybrid_quantifier.calculate_uncertainty()
 
         elif quantifier_type == QuantifierType.SEMANTIC_ENTROPY:
-            results_path = os.path.join(output_dir, "semantic_variations_classification.json")
+            results_path = os.path.join(output_dir, "semantic_entropy", "semantic_variations_classification.json")
         
             # Step 0: Check if results file exists
             if not os.path.exists(results_path):
@@ -70,14 +70,14 @@ if __name__ == "__main__":
         "--quantifier_type",
         type=str,
         choices=[QuantifierType.VERBALISED, QuantifierType.PREDICTIVE_ENTROPY, QuantifierType.SEMANTIC_ENTROPY],
-        default=QuantifierType.VERBALISED,
+        default=QuantifierType.SEMANTIC_ENTROPY,
         help="Type of uncertainty quantification to run."
     )
     parser.add_argument(
         "--model_names",
         type=str,
         nargs='+',
-        default=["openai"],
+        default=["mistralai"],
         help="List of model names to run uncertainty quantification for."
     )
     args = parser.parse_args()

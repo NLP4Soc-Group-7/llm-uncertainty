@@ -1,0 +1,119 @@
+{
+    "calibration_analysis": {
+        "bins": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+        ],
+        "expected_error_rates": [
+            0.0,
+            0.0,
+            0.0015902634477242827,
+            0.020631827414035797,
+            0.03322227671742439,
+            0.048454318195581436,
+            0.08218364417552948,
+            0.10654182732105255,
+            0.14388270676136017,
+            0.21457770466804504
+        ],
+        "actual_error_rates": [
+            0.2,
+            0.6,
+            0.3,
+            0.5,
+            0.3,
+            0.3,
+            0.4,
+            0.7,
+            0.6,
+            0.2
+        ],
+        "counts": [
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10
+        ]
+    },
+    "auroc_analysis": {
+        "auroc_threshold_0.00": 0.5159883720930232,
+        "auroc_threshold_0.04": 0.5194805194805194,
+        "auroc_threshold_0.11": 0.3076923076923076,
+        "auroc_threshold_0.16": 0.5625,
+        "auroc_threshold_0.19": 0.25
+    },
+    "error_uncertainty_correlation": {
+        "spearman_correlation": 0.05998817575911142,
+        "spearman_p_value": 0.5532654376057821
+    },
+    "comprehensive_correlation": {
+        "pearson": {
+            "correlation": 0.024778206968317354,
+            "p_value": 0.8066853232393287
+        },
+        "spearman": {
+            "correlation": 0.05998817575911142,
+            "p_value": 0.5532654376057821
+        },
+        "kendall": {
+            "correlation": 0.050389760477599355,
+            "p_value": 0.5505909647405252
+        }
+    },
+    "top_k_bottom_k_analysis": {
+        "top_5": {
+            "error_rate": 0.2,
+            "mean_uncertainty": 0.24574780464172363,
+            "brier_score": 0.40203568109757715
+        },
+        "bottom_5": {
+            "error_rate": 0.4,
+            "mean_uncertainty": 0.0,
+            "brier_score": 0.25
+        },
+        "top_10": {
+            "error_rate": 0.2,
+            "mean_uncertainty": 0.21457770466804504,
+            "brier_score": 0.28081397429407656
+        },
+        "bottom_10": {
+            "error_rate": 0.2,
+            "mean_uncertainty": 0.0,
+            "brier_score": 0.25
+        },
+        "top_20": {
+            "error_rate": 0.4,
+            "mean_uncertainty": 0.17923018336296082,
+            "brier_score": 0.38106519679730416
+        },
+        "bottom_20": {
+            "error_rate": 0.4,
+            "mean_uncertainty": 0.0,
+            "brier_score": 0.25
+        },
+        "top_50": {
+            "error_rate": 0.44,
+            "mean_uncertainty": 0.1191280335187912,
+            "brier_score": 0.3258543577421117
+        },
+        "bottom_50": {
+            "error_rate": 0.38,
+            "mean_uncertainty": 0.011088873259723186,
+            "brier_score": 0.3887725393807159
+        }
+    }
+}

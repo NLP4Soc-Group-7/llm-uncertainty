@@ -275,17 +275,27 @@ class UncertaintyEvaluator:
             bottom_k_errors = (self.predictions[bottom_k_indices] != self.labels[bottom_k_indices]).astype(float)
             bottom_k_uncertainties = self.uncertainties[bottom_k_indices]
             
+            # Normalize uncertainties to [0,1] range for Brier score calculation
+            # Handle case where all values are the same
+            def normalize_uncertainties(uncertainties):
+                if np.all(uncertainties == uncertainties[0]):
+                    return np.ones_like(uncertainties) * 0.5  # Return 0.5 for all values if they're the same
+                return (uncertainties - uncertainties.min()) / (uncertainties.max() - uncertainties.min())
+            
+            top_k_uncertainties_norm = normalize_uncertainties(top_k_uncertainties)
+            bottom_k_uncertainties_norm = normalize_uncertainties(bottom_k_uncertainties)
+            
             # Calculate metrics
             analysis[f'top_{k}'] = {
                 'error_rate': float(np.mean(top_k_errors)),
                 'mean_uncertainty': float(np.mean(top_k_uncertainties)),
-                'brier_score': float(brier_score_loss(top_k_errors, top_k_uncertainties))
+                'brier_score': float(brier_score_loss(top_k_errors, top_k_uncertainties_norm))
             }
             
             analysis[f'bottom_{k}'] = {
                 'error_rate': float(np.mean(bottom_k_errors)),
                 'mean_uncertainty': float(np.mean(bottom_k_uncertainties)),
-                'brier_score': float(brier_score_loss(bottom_k_errors, bottom_k_uncertainties))
+                'brier_score': float(brier_score_loss(bottom_k_errors, bottom_k_uncertainties_norm))
             }
             
         return analysis
